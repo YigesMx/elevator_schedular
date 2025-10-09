@@ -5,11 +5,15 @@ from elevator_saga.client.base_controller import ElevatorController
 from elevator_saga.client.proxy_models import ProxyElevator, ProxyFloor, ProxyPassenger
 from elevator_saga.core.models import SimulationEvent, Direction
 
+from comm.websocket_broadcastor import WebSocketBroadcastor
+
 class SingleElevatorBusController(ElevatorController):
-    def __init__(self):
+    def __init__(self, ws_broadcastor: WebSocketBroadcastor):
         super().__init__("http://127.0.0.1:8000", True)
         self.all_passengers: List[ProxyPassenger] = []
         self.max_floor = 0
+        
+        self.ws_broadcastor = ws_broadcastor
 
     def on_init(self, elevators: List[ProxyElevator], floors: List[ProxyFloor]) -> None:
         self.max_floor = floors[-1].floor
@@ -25,6 +29,7 @@ class SingleElevatorBusController(ElevatorController):
         self, tick: int, events: List[SimulationEvent], elevators: List[ProxyElevator], floors: List[ProxyFloor]
     ) -> None:
         print(f"Tick {tick}: 即将处理 {len(events)} 个事件 {[e.type.value for e in events]}")
+        # self.ws_broadcastor._broadcast(f"Tick {tick}: 即将处理 {len(events)} 个事件 {[e.type.value for e in events]}")
         for i in elevators:
             print(f"\t{i.id}[{i.target_floor_direction.value},{i.current_floor_float}/{i.target_floor}]" + "👦" * len(i.passengers), end="")
         print()
