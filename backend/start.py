@@ -1,31 +1,23 @@
 import time
 
-from controller.bus_controller import SingleElevatorBusController
-from comm.websocket_broadcastor import WebSocketBroadcastor
-
-def wait_for_client_confirmation(ws_broadcastor: WebSocketBroadcastor):
-    ready = False
-    
-    async def on_client_confirmed(ws, msg):
-        nonlocal ready
-        ready = True
-        print("Client confirmed to start, starting simulation...")
-    
-    ws_broadcastor.register_message_handler("client_confirmed", on_client_confirmed)
-    
-    while not ready:
-        ws_broadcastor.broadcast_to_all("server_wait_for_confirmation", "服务器等待客户端确认开始...")
-        time.sleep(1)
+from controller.bus_controller import SimpleElevatorBusController
+from comm.websocket_broadcastor import SceneBroadcastor
 
 if __name__ == "__main__":
-    ws_broadcastor = WebSocketBroadcastor(port=8001)
+    ws_broadcastor = SceneBroadcastor(port=8001)
     
     while True:
     
-        wait_for_client_confirmation(ws_broadcastor)
+        ws_broadcastor.wait_for_client_confirmation()
         
-        algorithm = SingleElevatorBusController(ws_broadcastor)
-        algorithm.start()
+        algorithm = SimpleElevatorBusController(ws_broadcastor)
+        
+        try:
+            algorithm.start()
+        except Exception as e:
+            print(f"Controller 发生异常: {e}")
+            ws_broadcastor.server_log(f"Controller 发生异常: {e}")
+            raise e
         
         # test communication
         # for i in range(5):

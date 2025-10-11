@@ -79,13 +79,13 @@ function SceneDisplay() {
 
     return (
         <>
-            <Stage width={720} height={480}>
+            {/* <Stage width={720} height={480}>
                 <Layer>
                     <Text text="Try clicking the rectangle" />
                     <ColoredRect x={testXVlaue}/>
                 </Layer>
-            </Stage>
-            {testXVlaue}
+            </Stage> */}
+            {/* {testXVlaue} */}
             {sceneData && JSON.stringify(sceneData)}
         </>
     )

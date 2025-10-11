@@ -6,9 +6,15 @@ import Footer from './body/footer'
 
 import { SceneDataContext, SocketContext } from './Contexts'
 
+interface SceneData {
+    status?: string;
+    scene?: any;
+    [key: string]: any;
+}
+
 function App() {
 
-    const [sceneData, setSceneData] = useState(null);
+    const [sceneData, setSceneData] = useState<SceneData | null>(null);
 
     const [socket, setSocket] = useState<WebSocket | null>(null);
 
@@ -47,7 +53,9 @@ function App() {
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
             console.log('Received message:', message);
+
             if (message.type === 'server_scene_update'){
+                console.log(message.data);
                 setSceneData((prevData) => {
                     const newData = prevData ? {...prevData} : {};
                     newData['status'] = 'updating';
@@ -60,6 +68,12 @@ function App() {
                     newData['status'] = 'finished';
                     return newData;
                 });
+            } else if (message.type === 'server_log'){
+                console.log('[Log from server]:', message.data);
+            } else if (message.type === 'server_error'){
+                console.error('[Error from server]:', message.data);
+            } else {
+                console.warn('[Unknown message type from server]', message.type);
             }
         }
 

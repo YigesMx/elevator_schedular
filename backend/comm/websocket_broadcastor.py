@@ -160,3 +160,35 @@ class WebSocketBroadcastor(object):
         for ws in disconnected:
             self.ws_client_connections.discard(ws)
             print(f"Removed closed connection, remaining: {len(self.ws_client_connections)}")
+            
+
+class SceneBroadcastor(WebSocketBroadcastor):
+    
+    def __init__(self, port=8001):
+        super().__init__(port)
+        self.scene_data = {}
+        
+    def wait_for_client_confirmation(self):
+        ready = False
+        
+        async def on_client_confirmed(ws, msg):
+            nonlocal ready
+            ready = True
+            print("Client confirmed to start, starting simulation...")
+        
+        self.register_message_handler("client_confirmed", on_client_confirmed)
+        
+        while not ready:
+            self.broadcast_to_all("server_wait_for_confirmation", "服务器等待客户端确认开始...")
+            time.sleep(1)
+    
+    def server_log(self, log_message: str):
+        print(f"[Log] {log_message}")
+        self.broadcast_to_all("server_log", log_message)
+    
+    def server_error(self, error_message: str):
+        print(f"[Error] {error_message}")
+        self.broadcast_to_all("server_error", error_message)
+    
+    def server_scene_update(self, scene_json):
+        self.broadcast_to_all("server_scene_update", scene_json)

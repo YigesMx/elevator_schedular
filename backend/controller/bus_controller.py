@@ -6,40 +6,50 @@ from elevator_saga.client.base_controller import ElevatorController
 from elevator_saga.client.proxy_models import ProxyElevator, ProxyFloor, ProxyPassenger
 from elevator_saga.core.models import SimulationEvent, Direction
 
-from comm.websocket_broadcastor import WebSocketBroadcastor
+from comm.websocket_broadcastor import SceneBroadcastor
+from scene.scene_manager import SceneManager
 
-class SingleElevatorBusController(ElevatorController):
-    def __init__(self, ws_broadcastor: WebSocketBroadcastor):
+class SimpleElevatorBusController(ElevatorController):
+    def __init__(self, scene_broadcastor: SceneBroadcastor):
         super().__init__("http://127.0.0.1:8000", True)
-        self.all_passengers: List[ProxyPassenger] = []
-        self.max_floor = 0
-        
-        self.ws_broadcastor = ws_broadcastor
+        self.scene_broadcastor = scene_broadcastor
 
     def on_init(self, elevators: List[ProxyElevator], floors: List[ProxyFloor]) -> None:
+        self.all_passengers: List[ProxyPassenger] = []
+        self.all_elevators: List[ProxyElevator] = []
+        
+        self.floors = []
+        
         self.max_floor = floors[-1].floor
         self.floors = floors
+        self.all_elevators = elevators
+        
+        # prepare algorithm
         for i, elevator in enumerate(elevators):
             # 计算目标楼层 - 均匀分布在不同楼层
             target_floor = (i * (len(floors) - 1)) // len(elevators)
             # 立刻移动到目标位置并开始循环
             elevator.go_to_floor(target_floor, immediate=True)
-        pass
+
+        # prepare scene manager
+        self.scene_manager = SceneManager()
+        self.scene_manager.set_building_info(len(floors), len(elevators), elevators[0].max_capacity)
+        self.scene_manager.set_elevator_and_passenger_container(self.all_elevators, self.all_passengers)
+        
+        # self.scene_broadcastor.server_scene_update(self.scene_manager.scene_json_str)
+            
 
     def on_event_execute_start(
         self, tick: int, events: List[SimulationEvent], elevators: List[ProxyElevator], floors: List[ProxyFloor]
     ) -> None:
-        print(f"Tick {tick}: 即将处理 {len(events)} 个事件 {[e.type.value for e in events]}")
-        self.ws_broadcastor.broadcast_to_all("server_scene_update", f"Tick {tick}: 即将处理 {len(events)} 个事件 {[e.type.value for e in events]}")
-        time.sleep(0.1)
+        time.sleep(0.1) # 给前端留时间
+        self.scene_manager.update_current_tick(tick)
+        
+        self.scene_broadcastor.server_log(f"Tick {tick}: 即将处理 {len(events)} 个事件 {[e.type.value for e in events]}")
+        
         for i in elevators:
-            print(f"\t{i.id}[{i.target_floor_direction.value},{i.current_floor_float}/{i.target_floor}]" + "👦" * len(i.passengers), end="")
+            print(f"\t{i.id}[{i.target_floor_direction.value},{i.current_floor_float}->{i.target_floor}]" + "👦" * len(i.passengers), end="")
         print()
-
-    def on_event_execute_end(
-        self, tick: int, events: List[SimulationEvent], elevators: List[ProxyElevator], floors: List[ProxyFloor]
-    ) -> None:
-        pass
 
     def on_passenger_call(self, passenger:ProxyPassenger, floor: ProxyFloor, direction: str) -> None:
         self.all_passengers.append(passenger)
@@ -50,6 +60,7 @@ class SingleElevatorBusController(ElevatorController):
 
     def on_elevator_stopped(self, elevator: ProxyElevator, floor: ProxyFloor) -> None:
         print(f"🛑 电梯 E{elevator.id} 停靠在 F{floor.floor}")
+        
         # BUS调度算法，电梯到达顶层后，立即下降一层
         if elevator.last_tick_direction == Direction.UP and elevator.current_floor == self.max_floor:
             elevator.go_to_floor(elevator.current_floor - 1)
@@ -71,4 +82,10 @@ class SingleElevatorBusController(ElevatorController):
         pass
 
     def on_elevator_approaching(self, elevator: ProxyElevator, floor: ProxyFloor, direction: str) -> None:
+        pass
+    
+    def on_event_execute_end(
+        self, tick: int, events: List[SimulationEvent], elevators: List[ProxyElevator], floors: List[ProxyFloor]
+    ) -> None:
+        self.scene_broadcastor.server_scene_update(self.scene_manager.scene_dict)
         pass
