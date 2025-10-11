@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from typing import List
+import time
 
 from elevator_saga.client.base_controller import ElevatorController
 from elevator_saga.client.proxy_models import ProxyElevator, ProxyFloor, ProxyPassenger
@@ -29,7 +30,8 @@ class SingleElevatorBusController(ElevatorController):
         self, tick: int, events: List[SimulationEvent], elevators: List[ProxyElevator], floors: List[ProxyFloor]
     ) -> None:
         print(f"Tick {tick}: 即将处理 {len(events)} 个事件 {[e.type.value for e in events]}")
-        # self.ws_broadcastor._broadcast(f"Tick {tick}: 即将处理 {len(events)} 个事件 {[e.type.value for e in events]}")
+        self.ws_broadcastor.broadcast_to_all("server_scene_update", f"Tick {tick}: 即将处理 {len(events)} 个事件 {[e.type.value for e in events]}")
+        time.sleep(0.1)
         for i in elevators:
             print(f"\t{i.id}[{i.target_floor_direction.value},{i.current_floor_float}/{i.target_floor}]" + "👦" * len(i.passengers), end="")
         print()

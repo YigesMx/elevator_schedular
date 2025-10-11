@@ -16,6 +16,17 @@ function App() {
     const [reconnecting, setReconnecting] = useState(false);
     const [reconnectSignal, setReconnectSignal] = useState(false);
 
+    // 定时任务，每0.5秒检查socket状态，没有的话就触发reconnectSignal
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (socket?.readyState === WebSocket.CLOSED) {
+                setReconnectSignal(prev => !prev);
+            }
+        }, 1000); // 每0.5秒检查一次
+
+        return () => clearInterval(interval); // 清除定时器
+    }, [socket]);
+
     useEffect(() => {
         console.log('Attempting to connect WebSocket...');
         setReconnecting(() => true);

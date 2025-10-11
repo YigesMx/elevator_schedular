@@ -24,10 +24,11 @@ if __name__ == "__main__":
     
         wait_for_client_confirmation(ws_broadcastor)
         
-        # algorithm = SingleElevatorBusController(ws_broadcastor)
-        # algorithm.start()
+        algorithm = SingleElevatorBusController(ws_broadcastor)
+        algorithm.start()
         
-        for i in range(5):
-            print("doing something...")
-            ws_broadcastor.broadcast_to_all("server_scene_update", f"正在执行...({i}s)")
-            time.sleep(2)
+        # test communication
+        # for i in range(5):
+        #     print("doing something...")
+        #     ws_broadcastor.broadcast_to_all("server_scene_update", f"正在执行...({i*2}s)")
+        #     time.sleep(2)

@@ -7,8 +7,8 @@ const ReactGridLayout = WidthProvider(RGL);
 function Body() {
     const layout = [
         { i: "a", x: 0, y: 0, w: 9, h: 12 },
-        { i: "b", x: 9, y: 0, w: 6, h: 6, minW: 2, minH: 6 },
-        { i: "c", x: 9, y: 6, w: 6, h: 6 }
+        { i: "b", x: 9, y: 0, w: 6, h: 6, minW: 4, minH: 6 },
+        { i: "c", x: 9, y: 6, w: 6, h: 6, minW: 4, minH: 6 }
     ];
     return (
         <ReactGridLayout
