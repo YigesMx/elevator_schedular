@@ -23,6 +23,7 @@ class SceneManager(object):
     def set_elevator_floor_passenger_container(self, elevators, floors, passengers):
         self.elevators = elevators
         self.passengers = passengers
+        self.floors = floors
     
     def update_current_tick(self, tick):
         self.current["tick"] = tick
@@ -45,9 +46,9 @@ class SceneManager(object):
             } if len(self.elevators) > 0 else dict(),
             "floors": {
                 f.floor: {
-                    "floor": f.floor,
-                    "waiting_passengers_up": f.up_queue,
-                    "waiting_passengers_down": f.down_queue,
+                    "id": f.floor,
+                    "up_queue": f.up_queue,
+                    "down_queue": f.down_queue,
                 } for f in self.floors
             } if len(self.floors) > 0 else dict(),
             "passengers": {

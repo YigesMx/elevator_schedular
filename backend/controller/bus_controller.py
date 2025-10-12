@@ -17,11 +17,10 @@ class SimpleElevatorBusController(ElevatorController):
     def on_init(self, elevators: List[ProxyElevator], floors: List[ProxyFloor]) -> None:
         self.all_passengers: List[ProxyPassenger] = []
         self.all_elevators: List[ProxyElevator] = []
-        
-        self.floors = []
+        self.all_floors: List[ProxyFloor] = []
         
         self.max_floor = floors[-1].floor
-        self.floors = floors
+        self.all_floors = floors
         self.all_elevators = elevators
         
         # prepare algorithm
@@ -34,7 +33,7 @@ class SimpleElevatorBusController(ElevatorController):
         # prepare scene manager
         self.scene_manager = SceneManager()
         self.scene_manager.set_building_info(len(floors), len(elevators), elevators[0].max_capacity)
-        self.scene_manager.set_elevator_floor_passenger_container(self.all_elevators, self.floors, self.all_passengers)
+        self.scene_manager.set_elevator_floor_passenger_container(self.all_elevators, self.all_floors, self.all_passengers)
         
         # self.scene_broadcastor.server_scene_update(self.scene_manager.scene_json_str)
             
@@ -42,7 +41,6 @@ class SimpleElevatorBusController(ElevatorController):
     def on_event_execute_start(
         self, tick: int, events: List[SimulationEvent], elevators: List[ProxyElevator], floors: List[ProxyFloor]
     ) -> None:
-        time.sleep(0.1) # 给前端留时间
         self.scene_manager.update_current_tick(tick)
         
         self.scene_broadcastor.server_log(f"Tick {tick}: 即将处理 {len(events)} 个事件 {[e.type.value for e in events]}")
@@ -88,4 +86,6 @@ class SimpleElevatorBusController(ElevatorController):
         self, tick: int, events: List[SimulationEvent], elevators: List[ProxyElevator], floors: List[ProxyFloor]
     ) -> None:
         self.scene_broadcastor.server_scene_update(self.scene_manager.scene_dict)
+        # self.scene_broadcastor.wait_for_client_confirmation()
+        time.sleep(0.1) # 给前端留时间
         pass
