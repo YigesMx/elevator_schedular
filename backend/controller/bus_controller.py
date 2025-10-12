@@ -34,7 +34,7 @@ class SimpleElevatorBusController(ElevatorController):
         # prepare scene manager
         self.scene_manager = SceneManager()
         self.scene_manager.set_building_info(len(floors), len(elevators), elevators[0].max_capacity)
-        self.scene_manager.set_elevator_and_passenger_container(self.all_elevators, self.all_passengers)
+        self.scene_manager.set_elevator_floor_passenger_container(self.all_elevators, self.floors, self.all_passengers)
         
         # self.scene_broadcastor.server_scene_update(self.scene_manager.scene_json_str)
             

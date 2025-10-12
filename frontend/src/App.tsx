@@ -4,13 +4,8 @@ import Header from './body/header'
 import Body from './body/layout'
 import Footer from './body/footer'
 
-import { SceneDataContext, SocketContext } from './Contexts'
-
-interface SceneData {
-    status?: string;
-    scene?: any;
-    [key: string]: any;
-}
+import { SceneDataContext, SocketContext } from './contexts_and_type'
+import type { SceneData } from './contexts_and_type'
 
 function App() {
 

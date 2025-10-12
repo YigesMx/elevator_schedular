@@ -13,13 +13,14 @@ class SceneManager(object):
         }
         self.passengers = []
         self.elevators = []
+        self.floors = []
     
     def set_building_info(self, floors, elevators, elevator_capacity):
         self.building["floors"] = floors
         self.building["elevators"] = elevators
         self.building["elevator_capacity"] = elevator_capacity
     
-    def set_elevator_and_passenger_container(self, elevators, passengers):
+    def set_elevator_floor_passenger_container(self, elevators, floors, passengers):
         self.elevators = elevators
         self.passengers = passengers
     
@@ -37,11 +38,18 @@ class SceneManager(object):
                     "current_pos": e.current_floor_float,
                     "target_floor": e.target_floor,
                     "is_idle": e.is_idle,
-                    "run_statis": "stopped" if e.run_status == ElevatorStatus.STOPPED else ("start_up" if e.run_status == ElevatorStatus.START_UP else ("start_down" if e.run_status == ElevatorStatus.START_DOWN else "constant_speed")),
+                    "run_status": "stopped" if e.run_status == ElevatorStatus.STOPPED else ("start_up" if e.run_status == ElevatorStatus.START_UP else ("start_down" if e.run_status == ElevatorStatus.START_DOWN else "constant_speed")),
                     "target_floor_direction": "up" if e.target_floor_direction == Direction.UP else ("down" if e.target_floor_direction == Direction.DOWN else "stopped"),
                     "passengers": e.passengers,
                 } for e in self.elevators
             } if len(self.elevators) > 0 else dict(),
+            "floors": {
+                f.floor: {
+                    "floor": f.floor,
+                    "waiting_passengers_up": f.up_queue,
+                    "waiting_passengers_down": f.down_queue,
+                } for f in self.floors
+            } if len(self.floors) > 0 else dict(),
             "passengers": {
                 p.id: {
                     "id": p.id,

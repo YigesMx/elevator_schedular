@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 
 import { Check } from "lucide-react"
-import { SocketContext } from '@/Contexts'
+import { SocketContext } from '@/contexts_and_type'
 
 interface HeaderProps {
     connected: boolean;
