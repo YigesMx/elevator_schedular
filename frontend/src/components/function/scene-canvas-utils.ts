@@ -33,7 +33,7 @@ export default class SceneCanvasUtils {
         this.centerPosition = { x: this.width / 2, y: this.height / 2 };
         this.firstFloorY = this.getFloorY(0);
         this.elevatorWidth = this.floorHeight + Math.ceil(this.elevatorCapacity/2) * this.elevatorCellSize;
-        this.waitingQueueRightX = this.getElevatorX(0) - this.padding_large;
+        this.waitingQueueRightX = this.getElevatorX(0) - this.elevatorCellSize;
         this.arrivedQueueLeftX = this.getElevatorX(this.elevatorsNumber - 1) + this.elevatorWidth + this.padding_large;
     }
 
@@ -91,7 +91,8 @@ export default class SceneCanvasUtils {
                 const row = index % 2;
                 const col = Math.floor(index / 2);
                 const x = ex + this.floorHeight + this.padding_small + col * this.elevatorCellSize;
-                const y = ey + this.padding_small + row * this.elevatorCellSize;
+                const y = row ==0 ? ey + this.padding_small*1.5 :
+                    ey + this.elevatorCellSize + this.padding_small*0.5;
                 inElevatorPassengersPosition[pid] = ({ x, y });
             });
         });

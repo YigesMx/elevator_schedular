@@ -47,17 +47,29 @@ function App() {
 
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log('Received message:', message);
+            // console.log('Received message:', message);
 
             if (message.type === 'server_scene_update'){
                 console.log(message.data);
+                // if any record in message.data.passengers have pickup_tick>0 && dropoff_tick>0 && pickup_tick==dropoff_tick,
+                // it means the scene has ended, set status to 'finished'
+                var status = 'updating';
+                if (Object.values(message.data.passengers).some((p: any) => 
+                    typeof p.pickup_tick === 'number' && p.pickup_tick > 0 && 
+                    typeof p.dropoff_tick === 'number' && p.dropoff_tick > 0 && 
+                    p.pickup_tick === p.dropoff_tick)) {
+                    console.log('Scene has ended.');
+                    status = 'finished';
+                }
                 setSceneData((prevData) => {
                     const newData = prevData ? {...prevData} : {};
-                    newData['status'] = 'updating';
+                    newData['status'] = status;
                     newData['scene'] = message.data;
+                    newData['prev_scene'] = prevData?.scene ? {...prevData.scene} : undefined;
                     return newData;
                 });
             } else if (message.type === 'server_wait_for_confirmation'){
+                console.log('Server is waiting for confirmation to proceed to next step.');
                 setSceneData((prevData) => {
                     const newData = prevData ? {...prevData} : {};
                     newData['status'] = 'finished';

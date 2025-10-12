@@ -60,6 +60,7 @@ export type SceneDict = {
 export type SceneData = {
     status?: string;
     scene?: SceneDict;
+    prev_scene?: SceneDict;
 }
 export const SceneDataContext = createContext({} as SceneData | null);
 
