@@ -61,8 +61,8 @@ class SceneManager(object):
                     "dropoff_tick": p.dropoff_tick,
                     "elevator_id": p.elevator_id,
                     "status": "waiting" if p.status == PassengerStatus.WAITING else ("in_elevator" if p.status == PassengerStatus.IN_ELEVATOR else "arrived"),
-                    "wait_time": p.wait_time,
-                    "system_time": p.system_time,
+                    "wait_time": p.floor_wait_time,
+                    "system_time": p.arrival_wait_time,
                     "travel_direction": "up" if p.travel_direction == Direction.UP else ("down" if p.travel_direction == Direction.DOWN else "stopped"),
                 } for p in self.passengers
             } if len(self.passengers) > 0 else dict()

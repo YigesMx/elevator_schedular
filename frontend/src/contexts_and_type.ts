@@ -2,6 +2,8 @@ import { useState, createContext } from 'react';
 
 // Types
 
+export type ConnectMethod = 'websocket_to_algorithm' | 'http_to_server';
+
 export type Direction = 'up' | 'down' | 'stopped';
 
 export type ElevatorStatus = 'stopped' | 'start_up' | 'start_down' | 'constant_speed';
@@ -46,6 +48,7 @@ export type SceneDict = {
     };
     current: {
         tick: number;
+        max_tick?: number;
     }
     elevators: {
         [key: string]: ElevatorDict
@@ -68,14 +71,12 @@ export type SceneData = {
 export type MetricsData = {
     completed_passengers: number;
     total_passengers: number;
-    average_wait_time: number;
-    average_system_time: number;
-    p95_wait_time: number;
-    p95_system_time: number;
+    average_floor_wait_time: number;
+    average_arrival_wait_time: number;
+    p95_floor_wait_time: number;
+    p95_arrival_wait_time: number;
     completion_rate: number; // percentage
 }
-
-
 
 // Contexts
 

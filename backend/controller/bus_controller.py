@@ -95,10 +95,10 @@ class SimpleElevatorBusController(ElevatorController):
             self.scene_broadcastor.server_metrics_update({
                 "completed_passengers": metrics.completed_passengers,
                 "total_passengers": metrics.total_passengers,
-                "average_wait_time": metrics.average_wait_time,
-                "p95_wait_time":  metrics.p95_wait_time,
-                "average_system_time":  metrics.average_system_time,
-                "p95_system_time":  metrics.p95_system_time,
+                "average_floor_wait_time": metrics.average_floor_wait_time,
+                "average_arrival_wait_time":  metrics.average_arrival_wait_time,
+                "p95_floor_wait_time":  metrics.p95_floor_wait_time,
+                "p95_arrival_wait_time":  metrics.p95_arrival_wait_time,
                 "completion_rate": metrics.completion_rate,
             })
             
