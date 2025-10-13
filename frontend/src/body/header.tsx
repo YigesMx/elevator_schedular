@@ -7,16 +7,18 @@ import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 
 import { Check } from "lucide-react"
-import { SocketContext } from '@/contexts_and_type'
+import { SceneDataContext } from '@/contexts_and_type'
 
 interface HeaderProps {
     connected: boolean;
     reconnecting: boolean;
     setReconnectSignal: React.Dispatch<React.SetStateAction<boolean>>;
+    onStart?: () => void;
 }
-function Header({ connected, reconnecting, setReconnectSignal }: HeaderProps) {
+function Header({ connected, reconnecting, setReconnectSignal, onStart }: HeaderProps) {
 
-    const socket = useContext(SocketContext);
+    const sceneData = useContext(SceneDataContext);
+
     return (
         <>
             <div className='relative flex items-center justify-center pt-8 mx-16 mb-8'>
@@ -43,13 +45,11 @@ function Header({ connected, reconnecting, setReconnectSignal }: HeaderProps) {
             </div>
             <div className='relative flex items-center justify-center mx-16 mb-2 space-x-4'>
                 <Button variant="default"
-                    disabled={!connected || reconnecting}
+                    disabled={!connected || reconnecting || (sceneData?.status === 'updating')}
                     onClick={() => {
-                    socket?.send(JSON.stringify({
-                        type: 'client_confirmed',
-                        data: {}
-                    }));
-                }}>
+                        if (onStart) onStart();
+                    }}
+                >
                     start
                 </Button>
             </div>

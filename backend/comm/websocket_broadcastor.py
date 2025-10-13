@@ -192,3 +192,6 @@ class SceneBroadcastor(WebSocketBroadcastor):
     
     def server_scene_update(self, scene_json):
         self.broadcast_to_all("server_scene_update", scene_json)
+    
+    def server_metrics_update(self, metrics_json):
+        self.broadcast_to_all("server_metrics_update", metrics_json)

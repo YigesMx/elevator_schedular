@@ -1,4 +1,6 @@
-import { createContext } from 'react';
+import { useState, createContext } from 'react';
+
+// Types
 
 export type Direction = 'up' | 'down' | 'stopped';
 
@@ -62,8 +64,53 @@ export type SceneData = {
     scene?: SceneDict;
     prev_scene?: SceneDict;
 }
-export const SceneDataContext = createContext({} as SceneData | null);
+
+export type MetricsData = {
+    completed_passengers: number;
+    total_passengers: number;
+    average_wait_time: number;
+    average_system_time: number;
+    p95_wait_time: number;
+    p95_system_time: number;
+    completion_rate: number; // percentage
+}
+
+
+
+// Contexts
 
 export const SocketContext = createContext(null as WebSocket | null);
-
+export const SceneDataContext = createContext({} as SceneData | null);
+export const MetricsDataContext = createContext({} as MetricsData | null);
+export const LogsDataContext = createContext([] as string[]);
 export const LayoutChangeTriggerContext = createContext(false as boolean);
+
+// custom update log hook
+export const useLogsData = () => {
+    const [logs, setLogs] = useState<string[]>([]);
+
+    const addLog = (newLog: string) => {
+        setLogs((prevLogs) => {
+            const updatedLogs = [...prevLogs, newLog];
+            // keep only the last 1000 logs
+            if (updatedLogs.length > 1000) {
+                updatedLogs.shift();
+            }
+            return updatedLogs;
+        });
+    };
+
+    const clearLogs = () => {
+        setLogs([]);
+    };
+
+    return { logs, addLog, clearLogs };
+};
+
+
+// Constants
+
+export const durationTime = 100; // milliseconds
+export const firstRenderDurationTime = 60; // milliseconds
+
+export const statisticStackNum = 10;

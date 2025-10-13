@@ -29,8 +29,8 @@ export default class SceneCanvasUtils {
         this.elevatorCapacity = elevator_capacity;
 
         this.elevatorCellSize = this.floorHeight/2;
+        this.centerPosition = { x: this.width / 2 - this.elevatorCellSize*2, y: this.height / 2 };
         this.passengerSize = this.elevatorCellSize - this.padding_small * 2;
-        this.centerPosition = { x: this.width / 2, y: this.height / 2 };
         this.firstFloorY = this.getFloorY(0);
         this.elevatorWidth = this.floorHeight + Math.ceil(this.elevatorCapacity/2) * this.elevatorCellSize;
         this.waitingQueueRightX = this.getElevatorX(0) - this.elevatorCellSize;

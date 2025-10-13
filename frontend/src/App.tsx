@@ -4,14 +4,15 @@ import Header from './body/header'
 import Body from './body/layout'
 import Footer from './body/footer'
 
-import { SceneDataContext, SocketContext } from './contexts_and_type'
+import { SocketContext, SceneDataContext, MetricsDataContext, LogsDataContext, useLogsData } from './contexts_and_type'
 import type { SceneData } from './contexts_and_type'
 
 function App() {
 
-    const [sceneData, setSceneData] = useState<SceneData | null>(null);
-
     const [socket, setSocket] = useState<WebSocket | null>(null);
+    const [sceneData, setSceneData] = useState<SceneData | null>(null);
+    const [metricsData, setMetricsData] = useState<any | null>(null);
+    const { logs, addLog, clearLogs } = useLogsData();
 
     const [connected, setConnected] = useState(false);
     const [reconnecting, setReconnecting] = useState(false);
@@ -68,6 +69,9 @@ function App() {
                     newData['prev_scene'] = prevData?.scene ? {...prevData.scene} : undefined;
                     return newData;
                 });
+            } else if (message.type === 'server_metrics_update'){
+                // console.log('Received metrics update:', message.data);
+                setMetricsData(message.data);
             } else if (message.type === 'server_wait_for_confirmation'){
                 console.log('Server is waiting for confirmation to proceed to next step.');
                 setSceneData((prevData) => {
@@ -76,11 +80,14 @@ function App() {
                     return newData;
                 });
             } else if (message.type === 'server_log'){
-                console.log('[Log from server]:', message.data);
+                console.log('[Log from server]', message.data);
+                addLog('[Log from server]:' + String(message.data));
             } else if (message.type === 'server_error'){
                 console.error('[Error from server]:', message.data);
+                addLog('[Error from server]:' + String(message.data));
             } else {
                 console.warn('[Unknown message type from server]', message.type);
+                addLog('[Unknown message type from server]:' + String(message.type));
             }
         }
 
@@ -96,17 +103,33 @@ function App() {
     return (
         <SocketContext value={socket}>
             <SceneDataContext value={sceneData}>
-                <div className='flex flex-col justifu-between min-h-screen'>
-                    <div>
-                        <Header connected={connected} reconnecting={reconnecting} setReconnectSignal={setReconnectSignal} />
-                    </div>
-                    <div className='w-full flex flex-col justify-center'>
-                        <Body />
-                    </div>
-                    <div>
-                        <Footer />
-                    </div>
-                </div>
+                <MetricsDataContext value={metricsData}>
+                    <LogsDataContext value={logs}>  
+                        <div className='flex flex-col justifu-between min-h-screen'>
+                            <div>
+                                <Header
+                                    connected={connected}
+                                    reconnecting={reconnecting}
+                                    setReconnectSignal={setReconnectSignal}
+                                    onStart={() => {
+                                        socket?.send(JSON.stringify({
+                                            type: 'client_confirmed',
+                                            data: {}
+                                        }));
+                                        clearLogs();
+                                        setMetricsData(null);
+                                    }}
+                                />
+                            </div>
+                            <div className='w-full flex flex-col justify-center'>
+                                <Body />
+                            </div>
+                            <div>
+                                <Footer />
+                            </div>
+                        </div>
+                    </LogsDataContext>
+                </MetricsDataContext>
             </SceneDataContext>
         </SocketContext>
     )

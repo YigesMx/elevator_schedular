@@ -88,4 +88,19 @@ class SimpleElevatorBusController(ElevatorController):
         self.scene_broadcastor.server_scene_update(self.scene_manager.scene_dict)
         # self.scene_broadcastor.wait_for_client_confirmation()
         time.sleep(0.1) # 给前端留时间
+        
+        if tick == self.current_traffic_max_tick-1:
+            final_state = self.api_client.get_state()
+            metrics = final_state.metrics
+            self.scene_broadcastor.server_metrics_update({
+                "completed_passengers": metrics.completed_passengers,
+                "total_passengers": metrics.total_passengers,
+                "average_wait_time": metrics.average_wait_time,
+                "p95_wait_time":  metrics.p95_wait_time,
+                "average_system_time":  metrics.average_system_time,
+                "p95_system_time":  metrics.p95_system_time,
+                "completion_rate": metrics.completion_rate,
+            })
+            
+            
         pass
