@@ -1,6 +1,6 @@
 import argparse
 
-from controller.bus_controller import SimpleElevatorBusController
+from controller import SimpleElevatorBusController
 from comm.websocket_broadcastor import SceneBroadcastor
 
 def parse_args():
