@@ -1,11 +1,13 @@
 import argparse
 
-from controller.bus_controller import SimpleElevatorBusController
-from controller.scan_controller import ScanElevatorController
+from controller import SimpleElevatorBusController, CostFunctionController
 from comm.websocket_broadcastor import SceneBroadcastor
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Elevator Saga Backend Server")
+    parser.add_argument(
+        "--server_port", type=int, default=8000, help="Port for Elevator Saga server (default: 8000)"
+    )
     parser.add_argument(
         "--ws_port", type=int, default=8001, help="Port for WebSocket server (default: 8001)"
     )
@@ -16,7 +18,7 @@ def parse_args():
         "--once", action="store_true", help="Run the simulation only once and exit"
     )
     parser.add_argument(
-        "--with-delay", action="store_true", help="Run the simulation with GUI"
+        "--with_delay", action="store_true", help="Run the simulation with GUI"
     )
     return parser.parse_args()
 
@@ -30,7 +32,7 @@ if __name__ == "__main__":
         if args.ws_wait_for_client:
             ws_broadcastor.wait_for_client_confirmation()
         
-        algorithm = SimpleElevatorBusController(ws_broadcastor)
+        algorithm = CostFunctionController(ws_broadcastor, server_port=args.server_port, with_delay=args.with_delay)
         
         try:
             algorithm.start()

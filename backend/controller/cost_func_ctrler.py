@@ -10,20 +10,21 @@ import math
 import time
 from typing import Dict, List, Set, Tuple
 
+from comm.websocket_broadcastor import SceneBroadcastor
+
 # 导入控制器基类、代理模型和核心数据模型
-from elevator_saga.client.base_controller import ElevatorController
+from .controller_with_comm import BaseControllerWithComm
 from elevator_saga.client.proxy_models import ProxyElevator, ProxyFloor, ProxyPassenger
 from elevator_saga.core.models import Direction, SimulationEvent
 
 
-class CostFunctionController(ElevatorController):
+class CostFunctionController(BaseControllerWithComm):
     """
     使用成本函数进行调度的控制器
     """
 
-    def __init__(self, server_url: str = "http://127.0.0.1:8000", debug: bool = False):
-        """初始化控制器和成本函数的权重"""
-        super().__init__(server_url, debug)
+    def __init__(self, scene_broadcastor: SceneBroadcastor, server_port=8000, with_delay=False):
+        super().__init__(scene_broadcastor=scene_broadcastor, server_port=server_port, with_delay=with_delay)
         
         self.elevator_directions: Dict[int, Direction] = {}
         self.stop_list: Dict[int, Set[int]] = {}
@@ -44,6 +45,7 @@ class CostFunctionController(ElevatorController):
         self.TICK_PER_FLOOR = 7 # 包含加速、匀速、减速、停靠的平均值
 
     def on_init(self, elevators: List[ProxyElevator], floors: List[ProxyFloor]) -> None:
+        super().on_init(elevators, floors)
         """算法初始化"""
         print("🚀 成本函数调度算法初始化...")
         self.max_floor = len(floors) - 1
@@ -53,7 +55,8 @@ class CostFunctionController(ElevatorController):
             self.stop_list[e_id] = set()
             elevator.go_to_floor(0)
 
-    def on_passenger_call(self, passenger: ProxyPassenger, floor: ProxyFloor, direction: str) -> None:
+    def on_passenger_call(self, passenger:ProxyPassenger, floor: ProxyFloor, direction: str) -> None:
+        super().on_passenger_call(passenger, floor, direction)
         """
         乘客呼叫时的回调
         - 将呼叫添加到“未分配池”，并立即尝试分配。
@@ -65,6 +68,7 @@ class CostFunctionController(ElevatorController):
             self._assign_pending_calls()
 
     def on_elevator_stopped(self, elevator: ProxyElevator, floor: ProxyFloor) -> None:
+        super().on_elevator_stopped(elevator, floor)
         """电梯停靠时的回调"""
         e_id = elevator.id
         self.stop_list[e_id].discard(floor.floor)
@@ -207,7 +211,10 @@ class CostFunctionController(ElevatorController):
     def on_passenger_board(self, elevator: ProxyElevator, passenger: ProxyPassenger) -> None:
         self.add_stop(elevator, passenger.destination)
 
-    def on_event_execute_start(self, tick: int, events: List[SimulationEvent], elevators: List[ProxyElevator], floors: List[ProxyFloor]) -> None:
+    def on_event_execute_start(
+        self, tick: int, events: List[SimulationEvent], elevators: List[ProxyElevator], floors: List[ProxyFloor]
+    ) -> None:
+        super().on_event_execute_start(tick, events, elevators, floors)
         print(f"--- Tick {tick} ---")
         for e in elevators:
             dir_char = "🔼" if self.elevator_directions[e.id] == Direction.UP else ("🔽" if self.elevator_directions[e.id] == Direction.DOWN else "⏹️")
@@ -215,18 +222,11 @@ class CostFunctionController(ElevatorController):
             print(f"  E{e.id} {dir_char} [F{e.current_floor_float:.1f}] 👦:{len(e.passengers)}/{e.max_capacity} 🛑:{stops}")
 
     # 其他回调可以保持为空
-    def on_event_execute_end(self, tick: int, events: List[SimulationEvent], elevators: List[ProxyElevator], floors: List[ProxyFloor]) -> None: 
-        time.sleep(0.1)
+    def on_event_execute_end(
+        self, tick: int, events: List[SimulationEvent], elevators: List[ProxyElevator], floors: List[ProxyFloor]
+    ) -> None:
+        super().on_event_execute_end(tick, events, elevators, floors)
     def on_passenger_alight(self, elevator: ProxyElevator, passenger: ProxyPassenger, floor: ProxyFloor) -> None: pass
     def on_elevator_passing_floor(self, elevator: ProxyElevator, floor: ProxyFloor, direction: str) -> None: pass
     def on_elevator_approaching(self, elevator: ProxyElevator, floor: ProxyFloor, direction: str) -> None: pass
     def on_elevator_move(self, elevator: ProxyElevator, from_position: float, to_position: float, direction: str, status: str) -> None: pass
-
-if __name__ == "__main__":
-    """
-    启动控制器
-    请确保先在另一个终端运行模拟器:
-    python -m elevator_saga.server.simulator
-    """
-    controller = CostFunctionController(debug=True)
-    controller.start()

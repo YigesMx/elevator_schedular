@@ -8,7 +8,7 @@ import { SocketContext, SceneDataContext, MetricsDataContext, LogsDataContext, u
 import type { ConnectMethod, SceneData, SceneDict, MetricsData } from './contexts_and_type'
 
 function App() {
-    const [connectMethod, setConnectMethod] = useState<ConnectMethod>('http_to_server');
+    const [connectMethod, setConnectMethod] = useState<ConnectMethod>('websocket_to_algorithm');
 
     const [socket, setSocket] = useState<WebSocket | null>(null);
     const [sceneData, setSceneData] = useState<SceneData | null>(null);
