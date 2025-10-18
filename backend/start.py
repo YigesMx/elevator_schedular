@@ -1,6 +1,7 @@
 import argparse
 
-from controller import SimpleElevatorBusController
+from controller.bus_controller import SimpleElevatorBusController
+from controller.scan_controller import ScanElevatorController
 from comm.websocket_broadcastor import SceneBroadcastor
 
 def parse_args():
@@ -15,6 +16,9 @@ def parse_args():
     parser.add_argument(
         "--once", action="store_true", help="Run the simulation only once and exit"
     )
+    parser.add_argument(
+        "--if-gui", action="store_true", help="Run the simulation with GUI"
+    )
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -27,7 +31,8 @@ if __name__ == "__main__":
         if args.ws_wait_for_client:
             ws_broadcastor.wait_for_client_confirmation()
         
-        algorithm = SimpleElevatorBusController(ws_broadcastor)
+        # algorithm = SimpleElevatorBusController(ws_broadcastor)
+        algorithm = ScanElevatorController(if_gui=args.if_gui)
         
         try:
             algorithm.start()
