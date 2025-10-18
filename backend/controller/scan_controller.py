@@ -137,7 +137,7 @@ class ScanElevatorController(ElevatorController):
                 if potential_stops: next_stop = max(potential_stops)
         
         if next_stop is not None and elevator.target_floor != next_stop:
-            elevator.go_to_floor(next_stop, immediate=False)
+            elevator.go_to_floor(next_stop, immediate=True)
             
     # --- 以下方法为框架要求，保留为空即可 ---
     def on_passenger_alight(self, elevator: ProxyElevator, passenger: ProxyPassenger, floor: ProxyFloor) -> None: pass

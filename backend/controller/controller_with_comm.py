@@ -10,9 +10,10 @@ from comm.websocket_broadcastor import SceneBroadcastor
 from scene.scene_manager import SceneManager
 
 class BaseControllerWithComm(ElevatorController):
-    def __init__(self, scene_broadcastor: SceneBroadcastor, server_port=8000):
+    def __init__(self, scene_broadcastor: SceneBroadcastor, server_port=8000, with_delay=False):
         super().__init__("http://127.0.0.1:"+str(server_port), True)
         self.scene_broadcastor = scene_broadcastor
+        self.with_delay = with_delay
 
     def on_init(self, elevators: List[ProxyElevator], floors: List[ProxyFloor]) -> None:
         self.all_passengers: List[ProxyPassenger] = []
@@ -70,7 +71,8 @@ class BaseControllerWithComm(ElevatorController):
     ) -> None:
         self.scene_broadcastor.server_scene_update(self.scene_manager.scene_dict)
         # self.scene_broadcastor.wait_for_client_confirmation()
-        time.sleep(0.1) # 给前端留时间
+        if self.with_delay:
+            time.sleep(0.1) # 给前端留时间
         
         if tick == self.current_traffic_max_tick-1:
             final_state = self.api_client.get_state()

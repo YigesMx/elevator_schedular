@@ -10,8 +10,8 @@ from comm.websocket_broadcastor import SceneBroadcastor
 from scene.scene_manager import SceneManager
 
 class SimpleElevatorBusController(BaseControllerWithComm):
-    def __init__(self, scene_broadcastor: SceneBroadcastor, server_port=8000):
-        super().__init__(scene_broadcastor=scene_broadcastor, server_port=server_port)
+    def __init__(self, scene_broadcastor: SceneBroadcastor, server_port=8000, with_delay=False):
+        super().__init__(scene_broadcastor=scene_broadcastor, server_port=server_port, with_delay=with_delay)
 
     def on_init(self, elevators: List[ProxyElevator], floors: List[ProxyFloor]) -> None:
         super().on_init(elevators, floors)
