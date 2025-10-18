@@ -16,18 +16,17 @@ class BaseControllerWithComm(ElevatorController):
         self.with_delay = with_delay
 
     def on_init(self, elevators: List[ProxyElevator], floors: List[ProxyFloor]) -> None:
-        self.all_passengers: List[ProxyPassenger] = []
-        self.all_elevators: List[ProxyElevator] = []
-        self.all_floors: List[ProxyFloor] = []
+        self._all_passengers: List[ProxyPassenger] = []
+        self._all_floors: List[ProxyFloor] = []
         
-        self.max_floor = floors[-1].floor
-        self.all_floors = floors
-        self.all_elevators = elevators
+        self._max_floor = floors[-1].floor
+        self._all_floors = floors
+        self._all_elevators = elevators
 
         # prepare scene manager
         self.scene_manager = SceneManager()
         self.scene_manager.set_building_info(len(floors), len(elevators), elevators[0].max_capacity)
-        self.scene_manager.set_elevator_floor_passenger_container(self.all_elevators, self.all_floors, self.all_passengers)
+        self.scene_manager.set_elevator_floor_passenger_container(self._all_elevators, self._all_floors, self._all_passengers)
         
         # self.scene_broadcastor.server_scene_update(self.scene_manager.scene_json_str)
             
@@ -44,7 +43,7 @@ class BaseControllerWithComm(ElevatorController):
         print()
 
     def on_passenger_call(self, passenger:ProxyPassenger, floor: ProxyFloor, direction: str) -> None:
-        self.all_passengers.append(passenger)
+        self._all_passengers.append(passenger)
         pass
 
     def on_elevator_idle(self, elevator: ProxyElevator) -> None:

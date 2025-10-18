@@ -1,6 +1,6 @@
 import argparse
 
-from controller import ImprovedElevatorBusController
+from controller import ImprovedElevatorBusController, ScanningSweepController
 from comm.websocket_broadcastor import SceneBroadcastor
 
 def parse_args():
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         if args.ws_wait_for_client:
             ws_broadcastor.wait_for_client_confirmation()
         
-        algorithm = ImprovedElevatorBusController(ws_broadcastor, server_port=args.server_port, with_delay=args.with_delay)
+        algorithm = ScanningSweepController(ws_broadcastor, server_port=args.server_port, with_delay=args.with_delay)
         
         try:
             algorithm.start()
