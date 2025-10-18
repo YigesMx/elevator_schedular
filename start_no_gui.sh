@@ -20,22 +20,16 @@ source $HOME/.local/bin/env
 echo "正在安装python 3.13.7..."
 uv python install 3.13.7
 
-# cd
-echo "切换到/elevator目录..."
-cd /elevator/
-
 # venv
 echo "正在创建并激活虚拟环境..."
 uv venv
-source .venv/bin/activate
+source ./.venv/bin/activate
 
 # 安装必要的包
 echo "正在安装必要的Python包from requirements..."
 uv pip install -r requirements.txt
 
 ############### 启动算法
-
-cd /elevator/
 
 # # 后台启动评测后端模拟器
 # echo "正在后台启动核心模拟服务器..."
@@ -45,4 +39,4 @@ cd /elevator/
 
 # 启动算法后端
 echo "正在启动调度算法... (按 [Ctrl+C] 结束)"
-python backend/start.py --once
+python ./backend/start.py --once
