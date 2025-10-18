@@ -11,7 +11,7 @@ const ReactGridLayout = WidthProvider(RGL);
 function Body() {
     const [layoutChangeTrigger, setLayoutChangeTrigger] = useState(false);
     const layout = [
-        { i: "a", x: 0, y: 0, w: 10, h: 12, minW: 8, minH: 10 },
+        { i: "a", x: 0, y: 0, w: 10, h: 18, minW: 8, minH: 10 },
         { i: "b", x: 10, y: 0, w: 5, h: 6, minW: 5, minH: 6 },
         { i: "c", x: 10, y: 6, w: 5, h: 6, minW: 5, minH: 6 }
     ];

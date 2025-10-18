@@ -1,2 +1,2 @@
 from .bus_controller import SimpleElevatorBusController
-from .cost_func_ctrler import CostFunctionController
+from .improved_bus_controller import ImprovedElevatorBusController

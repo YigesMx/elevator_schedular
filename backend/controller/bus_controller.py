@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from typing import List
-import time
 
 from .controller_with_comm import BaseControllerWithComm
 from elevator_saga.client.proxy_models import ProxyElevator, ProxyFloor, ProxyPassenger
