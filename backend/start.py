@@ -23,7 +23,7 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     
-    ws_broadcastor = SceneBroadcastor(port=args.port)
+    ws_broadcastor = SceneBroadcastor(port=args.ws_port)
     
     while True:
         

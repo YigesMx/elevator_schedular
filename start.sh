@@ -35,30 +35,32 @@ uv pip install -r requirements.txt
 
 ############### frontend env
 
-# Download and install fnm:
-curl -o- https://fnm.vercel.app/install | bash
+# Download and install nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+# in lieu of restarting the shell
+\. "$HOME/.nvm/nvm.sh"
 # Download and install Node.js:
-fnm install 22
-# Verify the Node.js version:
-node -v # Should print "v22.20.0".
+nvm install 22
 # Download and install pnpm:
-corepack enable pnpm
-# Verify pnpm version:
-pnpm -v
+npm install -g pnpm
 
 cd ./frontend
 echo "正在安装前端依赖..."
-pnpm install
+pnpm install --force
 
-############### 启动服务
+nohup pnpm vite &
+sleep 1
+
+############### 启动算法
 
 cd /elevator/
 
-# 后台启动评测后端模拟器
-echo "正在后台启动核心模拟服务器..."
-nohup python -m elevator_saga.server.simulator &
-
-# 等待服务器启动
-sleep 2
+# # 后台启动评测后端模拟器
+# echo "正在后台启动核心模拟服务器..."
+# nohup python -m elevator_saga.server.simulator &
+# # 等待服务器启动
+# sleep 2
 
 # 启动算法后端
+echo "正在启动调度算法... (按 [Ctrl+C] 结束)"
+nohup python backend/start.py --once &

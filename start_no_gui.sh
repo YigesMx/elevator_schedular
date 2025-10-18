@@ -1,46 +1,48 @@
 set -e
-echo "=== 正在以无头模式启动电梯模拟 ==="
+echo "=== 正在以gui模式启动电梯模拟 ==="
 echo
 
+# 更新包列表并安装curl
+echo "正在安装curl..."
+apt update
+apt install curl -y
 
-# 创建并激活虚拟环境
-if [ ! -d "venv" ]; then
-    echo "正在创建虚拟环境..."
-    python3 -m venv venv
-fi
-source venv/bin/activate       
-echo "虚拟环境已激活。"
+############### python env
+
+#uv
+echo "正在安装uv..."
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+export PATH="$HOME/.local/bin:$PATH"
+source $HOME/.local/bin/env
+
+#uv 安装 python
+echo "正在安装python 3.13.7..."
+uv python install 3.13.7
+
+# cd
+echo "切换到/elevator目录..."
+cd /elevator/
+
+# venv
+echo "正在创建并激活虚拟环境..."
+uv venv
+source .venv/bin/activate
 
 # 安装必要的包
-echo "正在安装必要的Python包..."
-pip install elevator-py -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+echo "正在安装必要的Python包from requirements..."
+uv pip install -r requirements.txt
 
-# 启动服务
-echo "正在后台启动核心模拟服务器..."
-python -m elevator_saga.server.simulator --host 0.0.0.0
+############### 启动算法
 
-SERVER_PID=$!
-echo "核心服务器已启动，PID: $SERVER_PID"
+cd /elevator/
 
+# # 后台启动评测后端模拟器
+# echo "正在后台启动核心模拟服务器..."
+# nohup python -m elevator_saga.server.simulator &
+# # 等待服务器启动
+# sleep 2
 
-
-# 清理函数
-cleanup() {
-    echo -e "\n\n正在关闭核心服务器..."
-    kill $SERVER_PID > /dev/null 2>&1 && echo "核心服务器 (PID: $SERVER_PID) 已关闭。"
-    deactivate
-    echo "清理完成。"
-    exit 0
-}
-trap cleanup SIGINT
-
+# 启动算法后端
 echo "正在启动调度算法... (按 [Ctrl+C] 结束)"
-echo "----------------------------------------------------"
-
-# 在前台运行算法，以便直接查看其输出
 python backend/start.py --once
-
-# 算法结束后，自动执行清理
-cleanup
-
-
