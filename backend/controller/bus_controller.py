@@ -33,6 +33,7 @@ class SimpleElevatorBusController(BaseControllerWithComm):
         super().on_passenger_call(passenger, floor, direction)
 
     def on_elevator_idle(self, elevator: ProxyElevator) -> None:
+        elevator.go_to_floor(1)  # 默认回到1楼
         pass
 
     def on_elevator_stopped(self, elevator: ProxyElevator, floor: ProxyFloor) -> None:

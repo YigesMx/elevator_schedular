@@ -24,7 +24,7 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     
-    ws_broadcastor = SceneBroadcastor(port=8001)
+    ws_broadcastor = SceneBroadcastor(port=args.port)
     
     while True:
         
@@ -32,7 +32,7 @@ if __name__ == "__main__":
             ws_broadcastor.wait_for_client_confirmation()
         
         # algorithm = SimpleElevatorBusController(ws_broadcastor)
-        algorithm = ScanElevatorController(if_gui=args.if_gui)
+        algorithm = SimpleElevatorBusController(ws_broadcastor)
         
         try:
             algorithm.start()
