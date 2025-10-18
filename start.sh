@@ -59,4 +59,4 @@ cd ../
 
 # 启动算法后端
 echo "正在启动调度算法... (按 [Ctrl+C] 结束)"
-python backend/start.py --once
+python backend/start.py --once --with_delay
