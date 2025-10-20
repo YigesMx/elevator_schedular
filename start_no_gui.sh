@@ -13,8 +13,8 @@ echo
 # echo "正在安装uv..."
 # curl -LsSf https://astral.sh/uv/install.sh | sh
 
-export PATH="$HOME/.local/bin:$PATH"
-source $HOME/.local/bin/env
+# export PATH="$HOME/.local/bin:$PATH"
+# source $HOME/.local/bin/env
 
 #uv 安装 python
 # echo "正在安装python 3.13.7..."
