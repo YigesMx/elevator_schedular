@@ -10,24 +10,24 @@ echo
 ############### python env
 
 #uv
-echo "正在安装uv..."
-curl -LsSf https://astral.sh/uv/install.sh | sh
+# echo "正在安装uv..."
+# curl -LsSf https://astral.sh/uv/install.sh | sh
 
 export PATH="$HOME/.local/bin:$PATH"
 source $HOME/.local/bin/env
 
 #uv 安装 python
-echo "正在安装python 3.13.7..."
-uv python install 3.13.7
+# echo "正在安装python 3.13.7..."
+# uv python install 3.13.7
 
 # venv
 echo "正在创建并激活虚拟环境..."
-uv venv
-source ./.venv/bin/activate
+# uv venv
+# source ./.venv/bin/activate
 
 # 安装必要的包
 echo "正在安装必要的Python包from requirements..."
-uv pip install -r requirements.txt
+pip install -r requirements.txt
 
 ############### frontend env
 
